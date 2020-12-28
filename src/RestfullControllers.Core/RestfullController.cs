@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Net;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RestfullControllers.Core.Extensions;
 
@@ -31,6 +34,10 @@ namespace RestfullControllers.Core
             return Ok(entity);
         }
 
-        public IActionResult HandleError(ValidationProblemDetails descriptor) => ValidationProblem(descriptor);
+        public IActionResult HandleError(int statusCode, ValidationProblemDetails problemDetails)
+        {
+            // Enum.GetValues<HttpStatusCode>()
+            return StatusCode(statusCode, problemDetails);
+        }
     }
 }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using RestfullControllers.Dummy.Api;
@@ -32,6 +33,14 @@ namespace RestfullControllers.Test
             return api.WithWebHostBuilder(a => a.ConfigureServices(s =>
             {
                 s.Add(new ServiceDescriptor(typeof(IEnumerable<DummyEntity>), entities));
+            }));
+        }
+
+        protected WebApplicationFactory<Startup> Mock(ValidationProblemDetails error)
+        {
+            return api.WithWebHostBuilder(a => a.ConfigureServices(s =>
+            {
+                s.Add(new ServiceDescriptor(typeof(ValidationProblemDetails), error));
             }));
         }
     }
