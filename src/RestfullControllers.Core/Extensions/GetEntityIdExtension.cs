@@ -5,16 +5,16 @@ using RestfullControllers.Core.Exceptions;
 
 namespace RestfullControllers.Core.Extensions
 {
-    internal static class GetEntityIdExtension
+    public static class GetEntityIdExtension
     {
-        public static object GetId<TEntity>(this TEntity entity)
+        public static object GetEntityId<TEntity>(this TEntity entity)
             where TEntity : class
         {
             var ids = entity.GetType().GetProperties()
                 .Where(p => p.GetCustomAttribute<IdAttribute>() != null);
 
-            if(!ids.Any()) throw new EntityWithoutIdException(nameof(entity));
-            if(ids.Count() > 1) throw new EntityWithMultipleIdsException(nameof(entity));
+            if(!ids.Any()) throw new EntityWithoutIdException<TEntity>(entity);
+            if(ids.Count() > 1) throw new EntityWithMultipleIdsException<TEntity>(entity);
 
             return ids.First().GetValue(entity);
         }

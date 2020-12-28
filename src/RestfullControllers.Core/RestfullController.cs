@@ -24,7 +24,7 @@ namespace RestfullControllers.Core
 
         public IActionResult HandleCreate(TEntity entity)
         {
-            return Created($"{Request.Path}/{entity.GetId()}", entity);
+            return Created($"{Request.Path}/{entity.GetEntityId()}", entity);
         }
 
         public IActionResult HandleUpdate() => NoContent();

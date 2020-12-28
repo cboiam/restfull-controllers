@@ -2,9 +2,9 @@ using System;
 
 namespace RestfullControllers.Core.Exceptions
 {
-    public class EntityWithoutIdException : Exception
+    public class EntityWithoutIdException<TEntity> : Exception
     {
-        public EntityWithoutIdException(string entity) 
-            : base($"{entity} must have an IdAttribute") { }
+        public EntityWithoutIdException(TEntity entity) 
+            : base($"{entity.GetType().Name} must have an IdAttribute") { }
     }
 }

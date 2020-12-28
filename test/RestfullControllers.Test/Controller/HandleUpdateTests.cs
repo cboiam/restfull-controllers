@@ -1,4 +1,3 @@
-using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -7,7 +6,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using RestfullControllers.Dummy.Api;
 using Xunit;
 
-namespace RestfullControllers.Test
+namespace RestfullControllers.Test.Controller
 {
     public class HandleUpdateTests : ApiTest
     {

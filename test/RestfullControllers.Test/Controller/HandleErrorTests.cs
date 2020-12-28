@@ -11,7 +11,7 @@ using RestfullControllers.Dummy.Api;
 using RestfullControllers.Dummy.Api.Controllers;
 using Xunit;
 
-namespace RestfullControllers.Test
+namespace RestfullControllers.Test.Controller
 {
     public class HandleErrorTests : ApiTest
     {

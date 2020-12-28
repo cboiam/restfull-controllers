@@ -8,7 +8,7 @@ using RestfullControllers.Dummy.Api;
 using RestfullControllers.Dummy.Api.Entities;
 using Xunit;
 
-namespace RestfullControllers.Test
+namespace RestfullControllers.Test.Controller
 {
     public class HandleDeleteTests : ApiTest
     {

@@ -3,13 +3,12 @@ using System.Net.Http.Json;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Testing;
 using RestfullControllers.Dummy.Api;
 using RestfullControllers.Dummy.Api.Entities;
 using Xunit;
 
-namespace RestfullControllers.Test
+namespace RestfullControllers.Test.Controller
 {
     public class HandleGetTests : ApiTest
     {
