@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using RestfullControllers.Core.Exceptions;
 using RestfullControllers.Core.Extensions;
 
 namespace RestfullControllers.Core
@@ -13,7 +15,7 @@ namespace RestfullControllers.Core
     {
         public IActionResult HandleGet(TEntity entity)
         {
-            if(entity == null)
+            if (entity == null)
                 return NotFound();
             return Ok(entity);
         }
@@ -29,14 +31,21 @@ namespace RestfullControllers.Core
 
         public IActionResult HandleDelete(TEntity entity)
         {
-            if(entity == null)
+            if (entity == null)
                 return NotFound();
             return Ok(entity);
         }
 
         public IActionResult HandleError(int statusCode, ValidationProblemDetails problemDetails)
         {
-            // Enum.GetValues<HttpStatusCode>()
+            var errorStatusCodes = Enum.GetValues<HttpStatusCode>()
+                .Select(e => e.GetHashCode())
+                .Where(e => e >= StatusCodes.Status400BadRequest);
+
+            if (!errorStatusCodes.Contains(statusCode))
+            {
+                throw new InvalidStatusCodeException(statusCode);
+            }
             return StatusCode(statusCode, problemDetails);
         }
     }

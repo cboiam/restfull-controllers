@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Testing;
+using RestfullControllers.Core.Exceptions;
 using RestfullControllers.Dummy.Api;
+using RestfullControllers.Dummy.Api.Controllers;
 using Xunit;
 
 namespace RestfullControllers.Test
@@ -38,6 +40,19 @@ namespace RestfullControllers.Test
             
             var content = await result.Content.ReadFromJsonAsync<ValidationProblemDetails>();
             content.Should().BeEquivalentTo(expectedError);
+        }
+
+        [Theory]
+        [InlineData(HttpStatusCode.OK)]
+        [InlineData(HttpStatusCode.Created)]
+        [InlineData(HttpStatusCode.Moved)]
+        [InlineData(HttpStatusCode.Continue)]
+        public void HandleError_ShouldThrowException_WhenStatusIsNotOfError(HttpStatusCode statusCode)
+        {
+            var controller = new DummyController();
+            Action action = () => controller.HandleError(statusCode.GetHashCode(), new());
+            action.Should().Throw<InvalidStatusCodeException>()
+                .WithMessage($"Status {statusCode.GetHashCode()} is not valid for this operation");
         }
     }
 }
