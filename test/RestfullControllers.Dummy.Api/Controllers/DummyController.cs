@@ -9,6 +9,9 @@ namespace RestfullControllers.Dummy.Api.Controllers
     [Route("dummies")]
     public class DummyController : RestfullController<DummyEntity>
     {
+        public DummyController(IResponseMapper<DummyEntity> responseMapper) 
+            : base(responseMapper) { }
+
         [HttpGet]
         public IActionResult Get([FromServices]IEnumerable<DummyEntity> results) => 
             HandleGet(results);
@@ -21,8 +24,8 @@ namespace RestfullControllers.Dummy.Api.Controllers
         public IActionResult Create(DummyEntity dummy, [FromServices]IEnumerable<DummyEntity> results) => 
             HandleCreate(results.FirstOrDefault(r => r.Name == dummy.Name));
 
-        [HttpPut]
-        [HttpPatch]
+        [HttpPut("{id}")]
+        [HttpPatch("{id}")]
         public IActionResult Update(DummyEntity dummy) => 
             HandleUpdate();
 

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Testing;
+using RestfullControllers.Core.Responses;
 using RestfullControllers.Dummy.Api;
 using RestfullControllers.Dummy.Api.Entities;
 using Xunit;
@@ -25,8 +26,8 @@ namespace RestfullControllers.Test.Controller
             var result = await client.DeleteAsync($"/dummies/{expectedResult.Id}");
             result.StatusCode.Should().Be(StatusCodes.Status200OK);
 
-            var content = await result.Content.ReadFromJsonAsync<DummyEntity>();
-            content.Should().BeEquivalentTo(expectedResult);
+            var content = await result.Content.ReadFromJsonAsync<Response<DummyEntity>>();
+            content.Should().BeEquivalentTo(DummyResponse.GetResponse(expectedResult));
         }
 
         [Fact]

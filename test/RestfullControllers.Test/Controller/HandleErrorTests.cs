@@ -6,9 +6,12 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Moq;
+using RestfullControllers.Core;
 using RestfullControllers.Core.Exceptions;
 using RestfullControllers.Dummy.Api;
 using RestfullControllers.Dummy.Api.Controllers;
+using RestfullControllers.Dummy.Api.Entities;
 using Xunit;
 
 namespace RestfullControllers.Test.Controller
@@ -49,7 +52,7 @@ namespace RestfullControllers.Test.Controller
         [InlineData(HttpStatusCode.Continue)]
         public void HandleError_ShouldThrowException_WhenStatusIsNotOfError(HttpStatusCode statusCode)
         {
-            var controller = new DummyController();
+            var controller = new DummyController(new Mock<IResponseMapper<DummyEntity>>().Object);
             Action action = () => controller.HandleError(statusCode.GetHashCode(), new());
             action.Should().Throw<InvalidStatusCodeException>()
                 .WithMessage($"Status {statusCode.GetHashCode()} is not valid for this operation");

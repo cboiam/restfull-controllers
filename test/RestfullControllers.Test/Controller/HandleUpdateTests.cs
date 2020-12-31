@@ -20,7 +20,7 @@ namespace RestfullControllers.Test.Controller
             var entity = new DummyEntityFaker().Generate();
             var client = api.CreateClient();
 
-            var result = await client.PutAsJsonAsync("/dummies", entity);
+            var result = await client.PutAsJsonAsync($"/dummies/{entity.Id}", entity);
             result.StatusCode.Should().Be(StatusCodes.Status204NoContent);
         }
 
@@ -30,7 +30,7 @@ namespace RestfullControllers.Test.Controller
             var entity = new DummyEntityFaker().Generate();
             var client = api.CreateClient();
 
-            var result = await client.PatchAsync("/dummies", JsonContent.Create(entity));
+            var result = await client.PatchAsync($"/dummies/{entity.Id}", JsonContent.Create(entity));
             result.StatusCode.Should().Be(StatusCodes.Status204NoContent);
         }
     }

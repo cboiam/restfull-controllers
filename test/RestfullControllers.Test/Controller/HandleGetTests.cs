@@ -1,9 +1,11 @@
+using System;
 using System.Collections.Generic;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Testing;
+using RestfullControllers.Core.Responses;
 using RestfullControllers.Dummy.Api;
 using RestfullControllers.Dummy.Api.Entities;
 using Xunit;
@@ -22,17 +24,16 @@ namespace RestfullControllers.Test.Controller
             var expectedResults = new DummyEntityFaker().Generate(3);
             var client = Mock(expectedResults).CreateClient();
 
-            var result = await client.GetFromJsonAsync<List<DummyEntity>>("/dummies");
-            result.Should().BeEquivalentTo(expectedResults);
+            var result = await client.GetFromJsonAsync<Response<List<DummyEntity>>>("/dummies");
+            result.Should().BeEquivalentTo(DummyResponse.GetResponse(expectedResults));
         }
 
         [Fact]
         public async Task HandleGetList_ReturnsOkEvenWithEmptyListAsync()
         {
             var client = Mock(new List<DummyEntity>()).CreateClient();
-            var result = await client.GetFromJsonAsync<List<DummyEntity>>("/dummies");
-            result.Should().NotBeNull()
-                .And.BeEmpty();
+            var result = await client.GetFromJsonAsync<Response<List<DummyEntity>>>("/dummies");
+            result.Should().BeEquivalentTo(DummyResponse.GetResponse(new List<DummyEntity>()));
         }
 
         [Fact]
@@ -40,9 +41,9 @@ namespace RestfullControllers.Test.Controller
         {
             var expectedResult = new DummyEntityFaker().Generate();
             var client = Mock(expectedResult).CreateClient();
-            
-            var result = await client.GetFromJsonAsync<DummyEntity>($"/dummies/{expectedResult.Id}");
-            result.Should().BeEquivalentTo(expectedResult);
+
+            var result = await client.GetFromJsonAsync<Response<DummyEntity>>($"/dummies/{expectedResult.Id}");
+            result.Should().BeEquivalentTo(DummyResponse.GetResponse(expectedResult));
         }
 
         [Fact]

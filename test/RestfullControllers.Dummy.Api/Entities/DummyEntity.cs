@@ -1,8 +1,9 @@
 using RestfullControllers.Core.Attributes;
+using RestfullControllers.Core.Responses;
 
 namespace RestfullControllers.Dummy.Api.Entities
 {
-    public class DummyEntity
+    public class DummyEntity : HateoasResponse
     {
         [Id]
         public int Id { get; set; }

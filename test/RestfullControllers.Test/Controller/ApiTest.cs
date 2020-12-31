@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,7 +24,7 @@ namespace RestfullControllers.Test.Controller
             {
                 s.Add(new ServiceDescriptor(typeof(IEnumerable<DummyEntity>), new List<DummyEntity>
                 {
-                    entity
+                    Copy(entity)
                 }));
             }));
         }
@@ -32,7 +33,8 @@ namespace RestfullControllers.Test.Controller
         {
             return api.WithWebHostBuilder(a => a.ConfigureServices(s =>
             {
-                s.Add(new ServiceDescriptor(typeof(IEnumerable<DummyEntity>), entities));
+                s.Add(new ServiceDescriptor(typeof(IEnumerable<DummyEntity>), 
+                    entities.Select(Copy)));
             }));
         }
 
@@ -42,6 +44,16 @@ namespace RestfullControllers.Test.Controller
             {
                 s.Add(new ServiceDescriptor(typeof(ValidationProblemDetails), error));
             }));
+        }
+
+        private DummyEntity Copy(DummyEntity entity)
+        {
+            return new DummyEntity
+            {
+                Id = entity.Id,
+                Name = entity.Name,
+                Active = entity.Active
+            };
         }
     }
 }

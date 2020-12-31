@@ -1,6 +1,8 @@
+using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using RestfullControllers.Core.Extensions;
 
 namespace RestfullControllers.Dummy.Api
 {
@@ -15,6 +17,7 @@ namespace RestfullControllers.Dummy.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            services.AddRestfullControllers(Assembly.GetAssembly(GetType()));
         }
 
         public void Configure(IApplicationBuilder app)
