@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using RestfullControllers.Core.Responses;
 using RestfullControllers.Dummy.Api;
 using RestfullControllers.Dummy.Api.Entities;
+using RestfullControllers.Test.Fakers;
 using Xunit;
 
 namespace RestfullControllers.Test.Controller

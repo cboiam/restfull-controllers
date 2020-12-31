@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using RestfullControllers.Core.Responses;
@@ -21,9 +22,7 @@ namespace RestfullControllers.Core
                 entity.Links = linkMapper.MapEntityLinks(entity);
             }
 
-            // TODO: get members that can have links AKA inherits from HateoasResponse and build their links as well
-            // entity.GetType().IsAssignableTo(typeof(HateoasResponse))
-            // entity.GetType().IsAssignableTo(typeof(IEnumerable<HateoasResponse>))
+            MapNestedLinks(entity);
 
             return new Response<TEntity>
             {
@@ -32,13 +31,35 @@ namespace RestfullControllers.Core
             };
         }
 
+        private void MapNestedLinks(TEntity entity)
+        {
+            if (entity == null)
+                return;
+
+            var properties = entity.GetType().GetProperties().Where(p =>
+                p.PropertyType.IsAssignableTo(typeof(HateoasResponse)) ||
+                p.PropertyType.IsAssignableTo(typeof(IEnumerable<HateoasResponse>))
+            );
+
+            foreach (var property in properties)
+            {
+                var propertyValue = property.GetValue(entity);
+                var links = linkMapper.MapSubEntityLinks(propertyValue);
+                property.PropertyType.GetProperty("Links").SetValue(propertyValue, links);
+            }
+        }
+
         public Response<IEnumerable<TEntity>> MapResponse(IEnumerable<TEntity> entities)
         {
             List<TEntity> data = null;
             if (entities != null)
             {
                 data = entities.ToList();
-                data.ForEach(entity => entity.Links = linkMapper.MapEntityLinks(entity));
+                data.ForEach(entity =>
+                {
+                    entity.Links = linkMapper.MapEntityLinks(entity);
+                    MapNestedLinks(entity);
+                });
             }
 
             return new Response<IEnumerable<TEntity>>

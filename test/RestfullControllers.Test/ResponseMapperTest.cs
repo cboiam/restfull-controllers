@@ -3,6 +3,7 @@ using FluentAssertions;
 using Moq;
 using RestfullControllers.Core;
 using RestfullControllers.Dummy.Api.Entities;
+using RestfullControllers.Test.Fakers;
 using Xunit;
 
 namespace RestfullControllers.Test

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
@@ -8,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using RestfullControllers.Core.Responses;
 using RestfullControllers.Dummy.Api;
 using RestfullControllers.Dummy.Api.Entities;
+using RestfullControllers.Test.Fakers;
 using Xunit;
 
 namespace RestfullControllers.Test.Controller

@@ -52,7 +52,13 @@ namespace RestfullControllers.Test.Controller
             {
                 Id = entity.Id,
                 Name = entity.Name,
-                Active = entity.Active
+                Active = entity.Active,
+                Person = new Person
+                {
+                    DocumentNumber = entity.Person.DocumentNumber,
+                    Name = entity.Person.Name,
+                    Birth = entity.Person.Birth
+                }
             };
         }
     }

@@ -1,14 +1,15 @@
+using System;
 using RestfullControllers.Core.Attributes;
 using RestfullControllers.Core.Responses;
 
 namespace RestfullControllers.Dummy.Api.Entities
 {
-    public class DummyEntity : HateoasResponse
+    public class Person : HateoasResponse
     {
         [Id]
-        public int Id { get; set; }
+        [RouteParameter(Name = "id")]
+        public string DocumentNumber { get; set; }
         public string Name { get; set; }
-        public bool Active { get; set; }
-        public Person Person { get; set; }
+        public DateTime Birth { get; set; }
     }
 }

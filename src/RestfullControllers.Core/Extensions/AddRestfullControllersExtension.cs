@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Reflection;
 using Microsoft.AspNetCore.Mvc;
@@ -9,8 +10,13 @@ namespace RestfullControllers.Core.Extensions
 {
     public static class AddRestfullControllersExtension
     {
-        public static IServiceCollection AddRestfullControllers(this IServiceCollection services, Assembly assembly)
+        public static IServiceCollection AddRestfullControllers(this IServiceCollection services, 
+            Assembly assembly,
+            Action<RestfullControllerOptions> optionsBuilder = null)
         {
+            var options = new RestfullControllerOptions();
+            optionsBuilder.Invoke(options);
+            
             var controllerMetadatas = assembly.GetTypes()
                 .Where(t => t.BaseType.FullName.Contains(typeof(RestfullController<>).FullName))
                 .Select(c => new ControllerMetadata
@@ -27,6 +33,7 @@ namespace RestfullControllers.Core.Extensions
                         })
                 });
                 
+            services.AddSingleton(options);
             services.AddSingleton(controllerMetadatas);
             services.AddScoped(typeof(ILinkMapper<>), typeof(LinkMapper<>));
             services.AddScoped(typeof(IResponseMapper<>), typeof(ResponseMapper<>));

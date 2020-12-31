@@ -13,27 +13,37 @@ namespace RestfullControllers.Test
             {
                 new Link
                 {
-                    Rel = "Self",
+                    Rel = "self",
                     Href = $"http://localhost/dummies/{entity.Id}",
                     Method = "GET"
                 },
                 new Link
                 {
-                    Rel = "Update",
+                    Rel = "update",
                     Href = $"http://localhost/dummies/{entity.Id}",
                     Method = "PUT"
                 },
                 new Link
                 {
-                    Rel = "Update",
+                    Rel = "update",
                     Href = $"http://localhost/dummies/{entity.Id}",
                     Method = "PATCH"
                 },
                 new Link
                 {
-                    Rel = "Delete",
+                    Rel = "delete",
                     Href = $"http://localhost/dummies/{entity.Id}",
                     Method = "DELETE"
+                }
+            };
+
+            entity.Person.Links = new List<Link>
+            {
+                new Link
+                {
+                    Rel = "self",
+                    Href = $"http://localhost/people/{entity.Person.DocumentNumber}",
+                    Method = "GET"
                 }
             };
 
@@ -44,19 +54,19 @@ namespace RestfullControllers.Test
                 {
                     new Link
                     {
-                        Rel = "Get",
+                        Rel = "get",
                         Href = "http://localhost/dummies",
                         Method = "GET"
                     },
                     new Link
                     {
-                        Rel = "Create",
+                        Rel = "create",
                         Href = "http://localhost/dummies",
                         Method = "POST"
                     },
                     new Link
                     {
-                        Rel = "Error",
+                        Rel = "error",
                         Href = "http://localhost/dummies/error",
                         Method = "GET"
                     }
@@ -73,27 +83,37 @@ namespace RestfullControllers.Test
                 {
                     new Link
                     {
-                        Rel = "Self",
+                        Rel = "self",
                         Href = $"http://localhost/dummies/{entity.Id}",
                         Method = "GET"
                     },
                     new Link
                     {
-                        Rel = "Update",
+                        Rel = "update",
                         Href = $"http://localhost/dummies/{entity.Id}",
                         Method = "PUT"
                     },
                     new Link
                     {
-                        Rel = "Update",
+                        Rel = "update",
                         Href = $"http://localhost/dummies/{entity.Id}",
                         Method = "PATCH"
                     },
                     new Link
                     {
-                        Rel = "Delete",
+                        Rel = "delete",
                         Href = $"http://localhost/dummies/{entity.Id}",
                         Method = "DELETE"
+                    }
+                };
+                
+                entity.Person.Links = new List<Link>
+                {
+                    new Link
+                    {
+                        Rel = "self",
+                        Href = $"http://localhost/people/{entity.Person.DocumentNumber}",
+                        Method = "GET"
                     }
                 };
             });
@@ -105,19 +125,19 @@ namespace RestfullControllers.Test
                 {
                     new Link
                     {
-                        Rel = "Get",
+                        Rel = "get",
                         Href = "http://localhost/dummies",
                         Method = "GET"
                     },
                     new Link
                     {
-                        Rel = "Create",
+                        Rel = "create",
                         Href = "http://localhost/dummies",
                         Method = "POST"
                     },
                     new Link
                     {
-                        Rel = "Error",
+                        Rel = "error",
                         Href = "http://localhost/dummies/error",
                         Method = "GET"
                     }

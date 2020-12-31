@@ -19,14 +19,20 @@ namespace RestfullControllers.Core
         private const string pathArgumentPattern = "{.*}";
         private const string ParameterNullMessage = "Path parameter can't be null";
         private const string SelfRel = "Self";
+        private readonly RestfullControllerOptions options;
         private readonly HttpContext context;
+        private readonly IEnumerable<ControllerMetadata> controllerMetadatas;
         private readonly ControllerMetadata controller;
 
-        public LinkMapper(IHttpContextAccessor contextAccessor, IEnumerable<ControllerMetadata> controllerMetadatas)
+        public LinkMapper(IHttpContextAccessor contextAccessor,
+            IEnumerable<ControllerMetadata> controllerMetadatas,
+            RestfullControllerOptions options)
         {
+            this.options = options;
             context = contextAccessor.HttpContext;
+            this.controllerMetadatas = controllerMetadatas;
             controller = controllerMetadatas.Where(c =>
-                c.Controller.IsAssignableTo(typeof(RestfullController<TEntity>)))
+                c.Controller.BaseType.GenericTypeArguments.Contains(typeof(TEntity)))
                 .FirstOrDefault();
         }
 
@@ -34,11 +40,12 @@ namespace RestfullControllers.Core
         {
             return controller.Actions.Where(a => !a.Methods.Any(IsActionScoped)).SelectMany(a =>
                 a.Methods.SelectMany(m =>
-                    m.HttpMethods.Select(h => {
+                    m.HttpMethods.Select(h =>
+                    {
                         var link = BuildLink(controller.Template, m.Template);
                         return new Link
                         {
-                            Rel = a.Action.Name,
+                            Rel = options.RelNamingStrategy.GetPropertyName(a.Action.Name, false),
                             Href = link,
                             Method = h
                         };
@@ -48,19 +55,21 @@ namespace RestfullControllers.Core
 
         public IEnumerable<Link> MapEntityLinks(TEntity entity)
         {
-            var idName = entity.GetType().GetMembers()
+            var idName = entity.GetType().GetProperties()
                 .FirstOrDefault(member => member.GetCustomAttribute<IdAttribute>() != null);
-            
+
             return controller.Actions.Where(a => a.Methods.Any(IsActionScoped)).SelectMany(a =>
                 a.Methods.SelectMany(m =>
-                    m.HttpMethods.Select(h => {
-                        var isSelf = HttpMethods.IsGet(h) && 
-                            idName != null && 
+                    m.HttpMethods.Select(h =>
+                    {
+                        var isSelf = HttpMethods.IsGet(h) &&
+                            idName != null &&
                             m.Template.Contains("{" + idName.Name + "}", StringComparison.InvariantCultureIgnoreCase);
-                        
+
+                        string rel = isSelf ? SelfRel : a.Action.Name;
                         return new Link
                         {
-                            Rel = isSelf ? SelfRel : a.Action.Name,
+                            Rel = options.RelNamingStrategy.GetPropertyName(rel, false),
                             Href = BuildLink(controller.Template, m.Template, entity),
                             Method = h
                         };
@@ -73,16 +82,41 @@ namespace RestfullControllers.Core
             return entities.SelectMany(MapEntityLinks);
         }
 
+        public IEnumerable<Link> MapSubEntityLinks(object entity)
+        {
+            var controller = controllerMetadatas.Where(c =>
+                c.Controller.BaseType.GenericTypeArguments.Contains(entity.GetType()))
+                .FirstOrDefault();
+
+            if (controller == null)
+                return null;
+
+            return controller.Actions.Where(a => a.Methods.Any(IsActionScoped))
+                .SelectMany(a => a.Methods.Where(m => m.HttpMethods.Any(h => HttpMethods.IsGet(h)))
+                    .SelectMany(m =>
+                        m.HttpMethods.Select(h =>
+                        {
+                            return new Link
+                            {
+                                Rel = options.RelNamingStrategy.GetPropertyName(SelfRel, false),
+                                Href = BuildLink(controller.Template, m.Template, entity),
+                                Method = h
+                            };
+                        })
+                    )
+                );
+        }
+
         private bool IsActionScoped(HttpMethodAttribute method) =>
             (controller.Template != null && Regex.IsMatch(controller.Template, pathArgumentPattern)) ||
             (method.Template != null && Regex.IsMatch(method.Template, pathArgumentPattern));
 
         private string BuildLink(string controllerTemplate,
             string actionTemplate,
-            TEntity entity = null)
+            object entity = null)
         {
             var template = controllerTemplate;
-            if(!string.IsNullOrEmpty(actionTemplate))
+            if (!string.IsNullOrEmpty(actionTemplate))
             {
                 template += $"/{actionTemplate}";
             }
@@ -93,9 +127,9 @@ namespace RestfullControllers.Core
                 path: $"/{path}");
         }
 
-        private static string InjectArgumentsInTemplate(TEntity entity, string template)
+        private static string InjectArgumentsInTemplate(object entity, string template)
         {
-            var entityType = typeof(TEntity);
+            Type entityType = entity?.GetType();
             var pathSegments = template.Trim(PathSeparator)
                 .Split(PathSeparator);
 
@@ -119,21 +153,26 @@ namespace RestfullControllers.Core
             return string.Join(PathSeparator, parametizedPath);
         }
 
-        private static object GetParameterValue(TEntity entity, Type entityType, string parameterName)
+        private static object GetParameterValue(object entity, Type entityType, string parameterName)
         {
-            var member = entityType.GetMembers()
-                .Where(m => m.Name.Equals(parameterName, StringComparison.InvariantCultureIgnoreCase));
+            var routeParameter = entityType.GetCustomAttributes<RouteParameterAttribute>()
+                .FirstOrDefault(a => a.Name.Equals(parameterName, StringComparison.InvariantCultureIgnoreCase));
 
-            if (!member.Any())
+            var properties = entityType.GetProperties()
+                .Select(p => new
+                {
+                    Property = p,
+                    RouteParameter = p.GetCustomAttribute<RouteParameterAttribute>()
+                })
+                .Where(p => p.Property.Name.Equals(parameterName, StringComparison.InvariantCultureIgnoreCase) ||
+                    (p.RouteParameter != null && p.RouteParameter.Name.Equals(parameterName, StringComparison.InvariantCultureIgnoreCase)));
+
+            if (!properties.Any())
             {
                 throw new MissingMemberException(entityType.Name, parameterName);
             }
 
-            return entityType.InvokeMember(member.First().Name, BindingFlags.GetField |
-                BindingFlags.GetProperty,
-                null,
-                entity,
-                null);
+            return properties.First().Property.GetValue(entity);
         }
     }
 }
