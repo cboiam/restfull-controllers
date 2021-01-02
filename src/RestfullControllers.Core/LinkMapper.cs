@@ -82,6 +82,7 @@ namespace RestfullControllers.Core
             return entities.SelectMany(MapEntityLinks);
         }
 
+        // TODO: Test and develop the mapping of lists
         public IEnumerable<Link> MapSubEntityLinks(object entity)
         {
             var controller = controllerMetadatas.Where(c =>

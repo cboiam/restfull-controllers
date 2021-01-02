@@ -3,7 +3,9 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Testing;
+using RestfullControllers.Core.Responses;
 using RestfullControllers.Dummy.Api;
+using RestfullControllers.Dummy.Api.Entities;
 using RestfullControllers.Test.Fakers;
 using Xunit;
 
@@ -16,23 +18,29 @@ namespace RestfullControllers.Test.Controller
         }
 
         [Fact]
-        public async Task HandlePut_ShouldReturnNoContent()
+        public async Task HandlePut_ShouldReturnOkWithLinks()
         {
             var entity = new DummyEntityFaker().Generate();
             var client = api.CreateClient();
 
             var result = await client.PutAsJsonAsync($"/dummies/{entity.Id}", entity);
-            result.StatusCode.Should().Be(StatusCodes.Status204NoContent);
+            result.StatusCode.Should().Be(StatusCodes.Status200OK);
+
+            var content = await result.Content.ReadFromJsonAsync<Response<DummyEntity>>();
+            content.Should().BeEquivalentTo(DummyResponse.GetResponse());
         }
 
         [Fact]
-        public async Task HandlePatch_ShouldReturnNoContent()
+        public async Task HandlePatch_ShouldReturnOkWithLinks()
         {
             var entity = new DummyEntityFaker().Generate();
             var client = api.CreateClient();
 
             var result = await client.PatchAsync($"/dummies/{entity.Id}", JsonContent.Create(entity));
-            result.StatusCode.Should().Be(StatusCodes.Status204NoContent);
+            result.StatusCode.Should().Be(StatusCodes.Status200OK);
+
+            var content = await result.Content.ReadFromJsonAsync<Response<DummyEntity>>();
+            content.Should().BeEquivalentTo(DummyResponse.GetResponse());
         }
     }
 }

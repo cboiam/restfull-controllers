@@ -47,7 +47,11 @@ namespace RestfullControllers.Core
             return Created($"{Request.Path}/{entity.GetEntityId()}", response);
         }
 
-        public IActionResult HandleUpdate() => NoContent();
+        public IActionResult HandleUpdate()
+        {
+            var response = responseMapper.MapResponse();
+            return Ok(response);
+        }
 
         public IActionResult HandleDelete(TEntity entity)
         {

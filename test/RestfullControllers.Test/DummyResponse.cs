@@ -7,45 +7,48 @@ namespace RestfullControllers.Test
 {
     public class DummyResponse
     {
-        public static Response<DummyEntity> GetResponse(DummyEntity entity)
+        public static Response<DummyEntity> GetResponse(DummyEntity entity = null)
         {
-            entity.Links = new List<Link>
+            if (entity != null)
             {
-                new Link
+                entity.Links = new List<Link>
                 {
-                    Rel = "self",
-                    Href = $"http://localhost/dummies/{entity.Id}",
-                    Method = "GET"
-                },
-                new Link
-                {
-                    Rel = "update",
-                    Href = $"http://localhost/dummies/{entity.Id}",
-                    Method = "PUT"
-                },
-                new Link
-                {
-                    Rel = "update",
-                    Href = $"http://localhost/dummies/{entity.Id}",
-                    Method = "PATCH"
-                },
-                new Link
-                {
-                    Rel = "delete",
-                    Href = $"http://localhost/dummies/{entity.Id}",
-                    Method = "DELETE"
-                }
-            };
+                    new Link
+                    {
+                        Rel = "self",
+                        Href = $"http://localhost/dummies/{entity.Id}",
+                        Method = "GET"
+                    },
+                    new Link
+                    {
+                        Rel = "update",
+                        Href = $"http://localhost/dummies/{entity.Id}",
+                        Method = "PUT"
+                    },
+                    new Link
+                    {
+                        Rel = "update",
+                        Href = $"http://localhost/dummies/{entity.Id}",
+                        Method = "PATCH"
+                    },
+                    new Link
+                    {
+                        Rel = "delete",
+                        Href = $"http://localhost/dummies/{entity.Id}",
+                        Method = "DELETE"
+                    }
+                };
 
-            entity.Person.Links = new List<Link>
-            {
-                new Link
+                entity.Person.Links = new List<Link>
                 {
-                    Rel = "self",
-                    Href = $"http://localhost/people/{entity.Person.DocumentNumber}",
-                    Method = "GET"
-                }
-            };
+                    new Link
+                    {
+                        Rel = "self",
+                        Href = $"http://localhost/people/{entity.Person.DocumentNumber}",
+                        Method = "GET"
+                    }
+                };
+            }
 
             return new Response<DummyEntity>
             {
@@ -77,7 +80,7 @@ namespace RestfullControllers.Test
         public static Response<IEnumerable<DummyEntity>> GetResponse(IEnumerable<DummyEntity> entities)
         {
             var data = entities.ToList();
-            data.ForEach(entity => 
+            data.ForEach(entity =>
             {
                 entity.Links = new List<Link>
                 {
@@ -106,7 +109,7 @@ namespace RestfullControllers.Test
                         Method = "DELETE"
                     }
                 };
-                
+
                 entity.Person.Links = new List<Link>
                 {
                     new Link

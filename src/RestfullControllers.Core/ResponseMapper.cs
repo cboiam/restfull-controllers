@@ -15,14 +15,13 @@ namespace RestfullControllers.Core
             this.linkMapper = linkMapper;
         }
 
-        public Response<TEntity> MapResponse(TEntity entity)
+        public Response<TEntity> MapResponse(TEntity entity = null)
         {
             if (entity != null)
             {
                 entity.Links = linkMapper.MapEntityLinks(entity);
+                MapNestedLinks(entity);
             }
-
-            MapNestedLinks(entity);
 
             return new Response<TEntity>
             {
@@ -33,9 +32,6 @@ namespace RestfullControllers.Core
 
         private void MapNestedLinks(TEntity entity)
         {
-            if (entity == null)
-                return;
-
             var properties = entity.GetType().GetProperties().Where(p =>
                 p.PropertyType.IsAssignableTo(typeof(HateoasResponse)) ||
                 p.PropertyType.IsAssignableTo(typeof(IEnumerable<HateoasResponse>))
