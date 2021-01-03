@@ -25,7 +25,7 @@ namespace RestfullControllers.Core.Extensions
                     Template = c.GetCustomAttribute<RouteAttribute>().Template,
                     Actions = c.GetMethods()
                         .Where(m => m.IsPublic &&
-                            m.ReturnType.IsAssignableTo(typeof(IActionResult)))
+                            typeof(IActionResult).IsAssignableFrom(m.ReturnType))
                         .Select(m => new ActionMetadata
                         {
                             Action = m,

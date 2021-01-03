@@ -21,7 +21,8 @@ namespace RestfullControllers.Core
             this.responseMapper = responseMapper;
         }
 
-        private static readonly int[] errorStatusCodes = Enum.GetValues<HttpStatusCode>()
+        private static readonly int[] errorStatusCodes = Enum.GetValues(typeof(HttpStatusCode))
+                .OfType<HttpStatusCode>()
                 .Select(e => e.GetHashCode())
                 .Where(e => e >= StatusCodes.Status400BadRequest)
                 .ToArray();

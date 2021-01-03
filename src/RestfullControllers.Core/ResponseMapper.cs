@@ -33,8 +33,8 @@ namespace RestfullControllers.Core
         private void MapNestedLinks(TEntity entity)
         {
             var properties = entity.GetType().GetProperties().Where(p =>
-                p.PropertyType.IsAssignableTo(typeof(HateoasResponse)) ||
-                p.PropertyType.IsAssignableTo(typeof(IEnumerable<HateoasResponse>))
+                typeof(HateoasResponse).IsAssignableFrom(p.PropertyType) ||
+                typeof(IEnumerable<HateoasResponse>).IsAssignableFrom(p.PropertyType)
             );
 
             foreach (var property in properties)

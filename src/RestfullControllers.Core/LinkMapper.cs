@@ -64,7 +64,7 @@ namespace RestfullControllers.Core
                     {
                         var isSelf = HttpMethods.IsGet(h) &&
                             idName != null &&
-                            m.Template.Contains("{" + idName.Name + "}", StringComparison.InvariantCultureIgnoreCase);
+                            m.Template.ToLower().Contains("{" + idName.Name.ToLower() + "}");
 
                         string rel = isSelf ? SelfRel : a.Action.Name;
                         return new Link
@@ -151,7 +151,7 @@ namespace RestfullControllers.Core
                 }
                 parametizedPath.Add(parameter.ToString());
             }
-            return string.Join(PathSeparator, parametizedPath);
+            return string.Join(PathSeparator.ToString(), parametizedPath);
         }
 
         private static object GetParameterValue(object entity, Type entityType, string parameterName)
