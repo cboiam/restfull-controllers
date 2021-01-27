@@ -51,16 +51,16 @@ namespace RestfullControllers.Core
             foreach (var property in properties)
             {
                 var values = property.GetValue(entity) as IEnumerable<HateoasResponse>;
+                
                 var listType = typeof(List<>);
                 var constructedListType = listType.MakeGenericType(property.PropertyType.GenericTypeArguments[0]);
                 var newValues = Activator.CreateInstance(constructedListType) as IList;
 
-                for (int i = 0; i < values.Count(); i++)
+                foreach (var value in values)
                 {
-                    var value = values.ElementAt(i);
                     SetNestedLinks(value.GetType(), value);
                     MapNestedResponse(value);
-                    newValues.Add(value);
+                    newValues.Add(value);                    
                 }
                 property.SetValue(entity, newValues);
             }
