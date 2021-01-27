@@ -48,6 +48,21 @@ namespace RestfullControllers.Test
                         Method = "GET"
                     }
                 };
+
+                var people = entity.People.ToList();
+                people.ForEach(person => 
+                {
+                    person.Links = new List<Link>
+                    {
+                        new Link
+                        {
+                            Rel = "self",
+                            Href = $"http://localhost/people/{person.DocumentNumber}",
+                            Method = "GET"
+                        }
+                    };
+                });
+                entity.People = people;
             }
 
             return new Response<DummyEntity>
@@ -119,6 +134,21 @@ namespace RestfullControllers.Test
                         Method = "GET"
                     }
                 };
+
+                var people = entity.People.ToList();
+                people.ForEach(person => 
+                {
+                    person.Links = new List<Link>
+                    {
+                        new Link
+                        {
+                            Rel = "self",
+                            Href = $"http://localhost/people/{person.DocumentNumber}",
+                            Method = "GET"
+                        }
+                    };
+                });
+                entity.People = people;
             });
 
             return new Response<IEnumerable<DummyEntity>>

@@ -58,7 +58,13 @@ namespace RestfullControllers.Test.Controller
                     DocumentNumber = entity.Person.DocumentNumber,
                     Name = entity.Person.Name,
                     Birth = entity.Person.Birth
-                }
+                },
+                People = entity.People.Select(x => new Person
+                {
+                    DocumentNumber = x.DocumentNumber,
+                    Name = x.Name,
+                    Birth = x.Birth
+                })
             };
         }
     }

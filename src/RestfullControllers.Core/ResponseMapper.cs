@@ -1,6 +1,8 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using RestfullControllers.Core.Responses;
 
 namespace RestfullControllers.Core
@@ -20,7 +22,7 @@ namespace RestfullControllers.Core
             if (entity != null)
             {
                 entity.Links = linkMapper.MapEntityLinks(entity);
-                MapNestedLinks(entity);
+                MapNestedResponse(entity);
             }
 
             return new Response<TEntity>
@@ -30,19 +32,61 @@ namespace RestfullControllers.Core
             };
         }
 
-        private void MapNestedLinks(TEntity entity)
+        private void MapNestedResponse(object entity)
+        {
+            if (entity == null)
+            {
+                return;
+            }
+
+            MapNestedObject(entity);
+            MapNestedList(entity);
+        }
+
+        private void MapNestedList(object entity)
         {
             var properties = entity.GetType().GetProperties().Where(p =>
-                typeof(HateoasResponse).IsAssignableFrom(p.PropertyType) ||
-                typeof(IEnumerable<HateoasResponse>).IsAssignableFrom(p.PropertyType)
-            );
+                typeof(IEnumerable<HateoasResponse>).IsAssignableFrom(p.PropertyType));
+
+            foreach (var property in properties)
+            {
+                var values = property.GetValue(entity) as IEnumerable<HateoasResponse>;
+                var listType = typeof(List<>);
+                var constructedListType = listType.MakeGenericType(property.PropertyType.GenericTypeArguments[0]);
+                var newValues = Activator.CreateInstance(constructedListType) as IList;
+
+                for (int i = 0; i < values.Count(); i++)
+                {
+                    var value = values.ElementAt(i);
+                    SetNestedLinks(value.GetType(), value);
+                    MapNestedResponse(value);
+                    newValues.Add(value);
+                }
+                property.SetValue(entity, newValues);
+            }
+        }
+
+        private void MapNestedObject(object entity)
+        {
+            var properties = entity.GetType().GetProperties().Where(p =>
+            typeof(HateoasResponse).IsAssignableFrom(p.PropertyType));
 
             foreach (var property in properties)
             {
                 var propertyValue = property.GetValue(entity);
-                var links = linkMapper.MapSubEntityLinks(propertyValue);
-                property.PropertyType.GetProperty("Links").SetValue(propertyValue, links);
+                SetNestedLinks(property, propertyValue);
             }
+        }
+
+        private void SetNestedLinks(Type type, object propertyValue)
+        {
+            var links = linkMapper.MapSubEntityLinks(propertyValue);
+            type.GetProperty("Links").SetValue(propertyValue, links);
+        }
+
+        private void SetNestedLinks(PropertyInfo property, object propertyValue)
+        {
+            SetNestedLinks(property.PropertyType, propertyValue);
         }
 
         public Response<IEnumerable<TEntity>> MapResponse(IEnumerable<TEntity> entities)
@@ -54,7 +98,7 @@ namespace RestfullControllers.Core
                 data.ForEach(entity =>
                 {
                     entity.Links = linkMapper.MapEntityLinks(entity);
-                    MapNestedLinks(entity);
+                    MapNestedResponse(entity);
                 });
             }
 
